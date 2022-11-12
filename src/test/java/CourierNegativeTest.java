@@ -1,7 +1,6 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +34,7 @@ public class CourierNegativeTest {
         this.message = message;
     }
 
-   @Parameterized.Parameters
+   @Parameterized.Parameters(name = "Тестовые данные: курьер: {0}; ожидаемый ответ сервера: {1}; ожидаемое сообщение: {2}")
    public static Object[][] getTestData() {
         return new Object[][] {
                 {CourierGenerator.getWithNameOnly(),SC_BAD_REQUEST, ERROR_MESSAGE_400},

@@ -1,30 +1,25 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import static org.apache.http.HttpStatus.SC_OK;
 
-import static org.junit.Assert.*;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class OrderListTest {
-
     private OrderClient orderClient;
     private Order order;
     private int track;
 
-
-
     @Before
     public void setUp() {
-
         orderClient = new OrderClient();
         order = OrderGenerator.getDefault();
-
     }
 
     @After
@@ -38,8 +33,6 @@ public class OrderListTest {
     @DisplayName("Get orders") // имя теста
     @Description("Basic test for post request to /api/v1/orders") // описание теста
     public void getOrderList() {
-
-
         ValidatableResponse responseCreate = orderClient.create(order);
         track = responseCreate.extract().path("track");
         ValidatableResponse responseGetOrders = orderClient.orderList();
@@ -47,7 +40,5 @@ public class OrderListTest {
         assertEquals(SC_OK,statusCodeGetList);
         ArrayList<String> listOrders = responseGetOrders.extract().path("orders");
         assertNotNull(listOrders);
-
     }
-
 }

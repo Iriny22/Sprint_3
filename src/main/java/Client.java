@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class Client {
-
    private static final String BASE_URL= "http://qa-scooter.praktikum-services.ru/";
    protected static final List<Filter> list = new ArrayList<>(
            Arrays.asList(
@@ -19,7 +17,6 @@ public class Client {
                    new ResponseLoggingFilter()
            )
    );
-
 
    protected static RequestSpecification getSpec() {
        return new RequestSpecBuilder()

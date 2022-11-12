@@ -1,5 +1,4 @@
 public class Credential {
-
     private String login;
     private String password;
 
@@ -10,10 +9,10 @@ public class Credential {
 
     public Credential() {
     }
+
     public static Credential from (Courier courier) {
         return new Credential(courier.getLogin(), courier.getPassword());
     }
-
 
     public String getLogin() {
         return login;
@@ -30,8 +29,4 @@ public class Credential {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
-
-
 }

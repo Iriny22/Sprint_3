@@ -1,12 +1,9 @@
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 
 public class OrderClient extends Client {
-
     private static final String PATH = "/api/v1/orders";
 
     @Step("Создание заказа")
@@ -36,5 +33,4 @@ public class OrderClient extends Client {
                 .get(PATH)
                 .then();
     }
-
 }

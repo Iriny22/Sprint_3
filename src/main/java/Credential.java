@@ -1,19 +1,19 @@
-public class Credentials {
+public class Credential {
 
     private String login;
     private String password;
 
-    public Credentials(String login, String password) {
+    public Credential(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
-    public static org.apache.http.auth.Credentials from (Courier courier) {
-        return new Credentials(courier.getLogin(), courier.getPassword());
+    public Credential() {
+    }
+    public static Credential from (Courier courier) {
+        return new Credential(courier.getLogin(), courier.getPassword());
     }
 
-    public Credentials() {
-    }
 
     public String getLogin() {
         return login;

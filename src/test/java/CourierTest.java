@@ -5,15 +5,20 @@ import org.junit.Test;
 import io.qameta.allure.junit4.DisplayName; // импорт DisplayName
 import io.qameta.allure.Description; // импорт Description
 
-import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
+
+import static org.apache.http.HttpStatus.*;
+import static org.junit.Assert.*;
 
 
-public class CourierPositiveTest {
+public class CourierTest {
 
     private CourierClient courierClient;
     private Courier courier;
     private int id;
+
+    private final static String ERROR_MESSAGE_409 = "Этот логин уже используется. Попробуйте другой.";
+    private final static String ERROR_MESSAGE_400 = "Учетная запись не найдена";
+    private final static String ERROR_MESSAGE_400_REQUIRED = "Недостаточно данных для входа";
 
     @Before
     public void setUp() {
@@ -25,31 +30,118 @@ public class CourierPositiveTest {
 
     @After
     public void cleanUp() {
-        courierClient.delete(id);
+        ValidatableResponse responseDelete = courierClient.delete(id);
     }
 
     @Test
-    @DisplayName("Create curier") // имя теста
+    @DisplayName("Create courier") // имя теста
     @Description("Basic test for post request to /api/v1/courier") // описание теста
     public void courierCreatedPositive() {
 
         ValidatableResponse responseCreate = courierClient.create(courier);
-
-        ValidatableResponse  responseLogin = courierClient.login(Credential.from(courier));
-
-        System.out.println("Ответ при создании курьера "+ responseCreate.extract());
-        System.out.println("Ответ при создании курьера "+ responseLogin.extract());
-        int statusCode = responseCreate.extract().statusCode();
-        System.out.println("statusCode "+ statusCode);
-        System.out.println("statusCode login "+ responseLogin.extract().statusCode());
-
+        ValidatableResponse responseLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseCreate.extract().statusCode();
         id = responseLogin.extract().path("id");
-        System.out.println("id "+ responseCreate);
-
-        boolean isCourierCreated = responseCreate.extract().path("ok");
-
-        assertEquals(201,statusCode);
+        Boolean isCourierCreated = responseCreate.extract().path("ok");
+        assertEquals(SC_CREATED,actualStatusCode);
+        assertTrue(isCourierCreated);
 
     }
+
+    @Test
+    @DisplayName("Create courier with the same credentials") // имя теста
+    @Description("Basic test for post request to /api/v1/courier") // описание теста
+    public void sameCourierCreatedNegative() {
+
+        courierClient.create(courier);
+        ValidatableResponse  responseLogin = courierClient.login(Credential.from(courier));
+        id = responseLogin.extract().path("id");
+        ValidatableResponse responseCreate = courierClient.create(courier);
+        int statusCode = responseCreate.extract().path("code");
+        String message = responseCreate.extract().path("message");
+        assertEquals(SC_CONFLICT,statusCode);
+        assertEquals(ERROR_MESSAGE_409,message);
+
+    }
+
+    @Test
+    @DisplayName("Login courier") // имя теста
+    @Description("Basic test for post request to /api/v1/courier/login") // описание теста
+    public void courierLoginPositive() {
+
+        courierClient.create(courier);
+        ValidatableResponse responseLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseLogin.extract().statusCode();
+        id = responseLogin.extract().path("id");
+        assertEquals(SC_OK,actualStatusCode);
+        assertNotNull(id);
+
+    }
+
+    @Test
+    @DisplayName("Login courier with wrong login") // имя теста
+    @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
+    public void courierWrongLogin() {
+
+        courierClient.create(courier);
+        ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
+        id = responseCorrectLogin.extract().path("id");
+        courier.setLogin("1");
+        ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseWrongLogin.extract().statusCode();
+        assertEquals(SC_NOT_FOUND, actualStatusCode);
+        String actualMessage = responseWrongLogin.extract().path("message");
+        assertEquals(ERROR_MESSAGE_400, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Login courier with wrong password") // имя теста
+    @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
+    public void courierWrongPassword() {
+
+        courierClient.create(courier);
+        ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
+        id = responseCorrectLogin.extract().path("id");
+        courier.setPassword("1");
+        ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseWrongLogin.extract().statusCode();
+        assertEquals(SC_NOT_FOUND, actualStatusCode);
+        String actualMessage = responseWrongLogin.extract().path("message");
+        assertEquals(ERROR_MESSAGE_400, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Login courier with required field login") // имя теста
+    @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
+    public void courierLoginWithoutRequiredFieldLogin() {
+
+        courierClient.create(courier);
+        ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
+        id = responseCorrectLogin.extract().path("id");
+        courier.setLogin(null);
+        ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseWrongLogin.extract().statusCode();
+        assertEquals(SC_BAD_REQUEST, actualStatusCode);
+        String actualMessage = responseWrongLogin.extract().path("message");
+        assertEquals(ERROR_MESSAGE_400_REQUIRED, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Login courier with required field password") // имя теста
+    @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
+    public void courierLoginWithoutRequiredFieldPassword() {
+
+        courierClient.create(courier);
+        ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
+        id = responseCorrectLogin.extract().path("id");
+        courier.setPassword(null) ;
+        ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
+        int actualStatusCode = responseWrongLogin.extract().statusCode();
+        assertEquals(SC_BAD_REQUEST, actualStatusCode);
+        String actualMessage = responseWrongLogin.extract().path("message");
+        assertEquals(ERROR_MESSAGE_400_REQUIRED, actualMessage);
+    }
+
+
 }
 

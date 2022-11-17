@@ -111,20 +111,22 @@ public class CourierTest {
         String actualMessage = responseWrongLogin.extract().path("message");
         assertEquals(ERROR_MESSAGE_400_REQUIRED, actualMessage);
     }
+    /*
+     @Test
+     @DisplayName("Login courier with required field password") // имя теста
+     @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
+     public void courierLoginWithoutRequiredFieldPassword() {
+         courierClient.create(courier);
+         ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
+         id = responseCorrectLogin.extract().path("id");
+         courier.setPassword(null) ;
+         ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
+         int actualStatusCode = responseWrongLogin.extract().statusCode();
+         assertEquals(SC_BAD_REQUEST, actualStatusCode);
+         String actualMessage = responseWrongLogin.extract().path("message");
+         assertEquals(ERROR_MESSAGE_400_REQUIRED, actualMessage);
+     }
 
-    @Test
-    @DisplayName("Login courier with required field password") // имя теста
-    @Description("Basic negative test for post request to /api/v1/courier/login") // описание теста
-    public void courierLoginWithoutRequiredFieldPassword() {
-        courierClient.create(courier);
-        ValidatableResponse responseCorrectLogin = courierClient.login(Credential.from(courier));
-        id = responseCorrectLogin.extract().path("id");
-        courier.setPassword(null) ;
-        ValidatableResponse responseWrongLogin = courierClient.login(Credential.from(courier));
-        int actualStatusCode = responseWrongLogin.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, actualStatusCode);
-        String actualMessage = responseWrongLogin.extract().path("message");
-        assertEquals(ERROR_MESSAGE_400_REQUIRED, actualMessage);
-    }
+    */
 }
 
